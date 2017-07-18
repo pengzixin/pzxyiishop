@@ -24,3 +24,6 @@
     </tr>
     <?php endforeach;?>
 </table>
+<!--分页工具条-->
+<?php
+echo \yii\widgets\LinkPager::widget(['pagination'=>$pager,'nextPageLabel'=>'下一页','prevPageLabel'=>'上一页','firstPageLabel'=>'首页','lastPageLabel'=>'末页']);

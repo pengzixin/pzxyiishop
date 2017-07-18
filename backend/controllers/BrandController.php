@@ -1,6 +1,7 @@
 <?php
 namespace backend\controllers;
 use backend\models\Brand;
+use yii\data\Pagination;
 use yii\web\Controller;
 use yii\web\Request;
 use yii\web\UploadedFile;
@@ -9,9 +10,20 @@ class BrandController extends Controller{
     //展示页面
     public function actionIndex(){
         //实例化对象
-        $brands=Brand::find()->where(['>','status',-1])->all();
+        $query=Brand::find()->where(['>','status',-1]);
+        //$brands=Brand::find()->where(['>','status',-1])->all();
+        //查询出总条数
+        $total=$query->count();
+        //每页显示条数
+        $pageSize=3;
+        //实例化分页工具类
+        $pager= new Pagination([
+            'totalCount'=>$total,
+            'defaultPageSize'=>$pageSize,
+        ]);
+        $brands=$query->limit($pager->limit)->offset($pager->offset)->all();
         //调用视图，分配数据
-        return $this->render('index',['brands'=>$brands]);
+        return $this->render('index',['brands'=>$brands,'pager'=>$pager]);
     }
     //添加
     public function actionAdd(){

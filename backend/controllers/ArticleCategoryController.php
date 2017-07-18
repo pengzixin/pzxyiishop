@@ -1,6 +1,7 @@
 <?php
 namespace backend\controllers;
 use backend\models\ArticleCategory;
+use yii\data\Pagination;
 use yii\web\Controller;
 use yii\web\Request;
 
@@ -8,9 +9,21 @@ class ArticleCategoryController extends Controller{
     //展示列表功能
     public function actionIndex(){
         //实例化对象
-        $categorys= ArticleCategory::find()->where(['>','status',-1])->all();
+        $query=ArticleCategory::find()->where(['>','status',-1]);
+        //查询总条数
+        $total=$query->count();
+        //每页显示条数
+        $pageSize=3;
+        //分页工具条
+        $pager=new Pagination([
+            'totalCount'=>$total,
+            'defaultPageSize'=>$pageSize
+        ]);
+        //根据条件查询数据
+        $categorys=$query->limit($pager->limit)->offset($pager->offset)->all();
+        //$categorys= ArticleCategory::find()->where(['>','status',-1])->all();
         //调用视图，分配数据
-        return $this->render('index',['categorys'=>$categorys]);
+        return $this->render('index',['categorys'=>$categorys,'pager'=>$pager]);
     }
 
     //添加功能
