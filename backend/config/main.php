@@ -10,6 +10,8 @@ return [
     'id' => 'app-backend',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
+    //设置语言
+    'language'=>'zh-CN',
     'bootstrap' => ['log'],
     'modules' => [],
     'components' => [
