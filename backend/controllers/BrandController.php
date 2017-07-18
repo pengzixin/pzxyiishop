@@ -9,7 +9,7 @@ class BrandController extends Controller{
     //展示页面
     public function actionIndex(){
         //实例化对象
-        $brands=Brand::find()->all();
+        $brands=Brand::find()->where(['>','status',-1])->all();
         //调用视图，分配数据
         return $this->render('index',['brands'=>$brands]);
     }
@@ -91,6 +91,7 @@ class BrandController extends Controller{
                 //保存数据到数据库
                 $model->save();
                 //跳转回首页
+                \yii::$app->session->setFlash('success','修改成功');
                 return $this->redirect(['brand/index']);
             }else{
                 //验证失败
@@ -107,12 +108,10 @@ class BrandController extends Controller{
         //var_dump($model);exit;
         if($model->status>-1){
             $model->status=-1;
-        }else{
-            \yii::$app->session->setFlash('warning','已是删除状态');
-            return $this->redirect(['brand/index']);
         }
         $model->save();
         //跳转回首页
+        \yii::$app->session->setFlash('success','删除成功');
         return $this->redirect(['brand/index']);
     }
 }
