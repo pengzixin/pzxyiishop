@@ -29,8 +29,10 @@ class Brand extends ActiveRecord{
         return [
             [['name','intro','sort','status'],'required'],//必填
             ['sort','integer'],
+            [['name'], 'string', 'max' => 50],
+            [['logo'], 'string', 'max' => 255],
             //文件上传规则
-            ['imgFile','file','extensions'=>['jpg','png','gif']],
+            //['imgFile','file','extensions'=>['jpg','png','gif']],
         ];
     }
 }

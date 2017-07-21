@@ -1,16 +1,18 @@
 <?php
 namespace backend\controllers;
 use backend\models\Brand;
+use flyok666\uploadifive\UploadAction;
 use yii\data\Pagination;
 use yii\web\Controller;
 use yii\web\Request;
 use yii\web\UploadedFile;
+use flyok666\qiniu\Qiniu;
 
 class BrandController extends Controller{
     //展示页面
     public function actionIndex(){
         //实例化对象
-        $query=Brand::find()->where(['>','status',-1]);
+        $query=Brand::find()->where(['and','status',-1]);
         //$brands=Brand::find()->where(['>','status',-1])->all();
         //查询出总条数
         $total=$query->count();
@@ -34,31 +36,12 @@ class BrandController extends Controller{
         if($request->isPost){
             //加载数据
             $model->load($request->post());
-            //实例化文件上传对象
-            $model->imgFile=UploadedFile::getInstance($model,'imgFile');
             //验证数据
             if($model->validate()){
-                //验证成功
-                //如果有文件上传就处理图片
-                if($model->imgFile){
-                    //var_dump($model->imgFile);exit;
-                    //存放图片路径
-                    $path=\yii::getAlias('@webroot').'/upload/'.date('Ymd');
-                    //var_dump($path);exit;
-                    //创建文件夹，如果有就不创建
-                    if(!is_dir($path)){
-                        mkdir($path,0777,true);
-                    }
-                    //拼凑图片路径
-                    $filename='/upload/'.date('Ymd').'/'.uniqid().'.'.$model->imgFile->extension;
-                    //移动图片
-                    $model->imgFile->saveAs(\yii::getAlias('@webroot').$filename,false);
-                    //将图片路径放到薯片属性中
-                    $model->logo=$filename;
-                }
-                //保存数据到数据库
+                //验证成功保存数据到数据库
                 $model->save();
                 //跳转回首页
+                \Yii::$app->session->setFlash('success','品牌添加成功');
                 return $this->redirect(['brand/index']);
             }else{
                 //验证失败
@@ -75,35 +58,17 @@ class BrandController extends Controller{
         $model= Brand::findOne($id);
         $request = new Request();
         //判断提交方式
+        $request = new Request();
+        //判断提交方式
         if($request->isPost){
             //加载数据
             $model->load($request->post());
-            //实例化文件上传对象
-            $model->imgFile=UploadedFile::getInstance($model,'imgFile');
             //验证数据
             if($model->validate()){
-                //验证成功
-                //如果有文件上传就处理图片
-                if($model->imgFile){
-                    //var_dump($model->imgFile);exit;
-                    //存放图片路径
-                    $path=\yii::getAlias('@webroot').'/upload/'.date('Ymd');
-                    //var_dump($path);exit;
-                    //创建文件夹，如果有就不创建
-                    if(!is_dir($path)){
-                        mkdir($path,0777,true);
-                    }
-                    //拼凑图片路径
-                    $filename='/upload/'.date('Ymd').'/'.uniqid().'.'.$model->imgFile->extension;
-                    //移动图片
-                    $model->imgFile->saveAs(\yii::getAlias('@webroot').$filename,false);
-                    //将图片路径放到薯片属性中
-                    $model->logo=$filename;
-                }
-                //保存数据到数据库
+                //验证成功保存数据到数据库
                 $model->save();
                 //跳转回首页
-                \yii::$app->session->setFlash('success','修改成功');
+                \Yii::$app->session->setFlash('success','品牌修改成功');
                 return $this->redirect(['brand/index']);
             }else{
                 //验证失败
@@ -125,5 +90,45 @@ class BrandController extends Controller{
         //跳转回首页
         \yii::$app->session->setFlash('success','删除成功');
         return $this->redirect(['brand/index']);
+    }
+
+    //图片上传
+    public function actions()
+    {
+        return [
+            's-upload' => [
+                'class' => UploadAction::className(),
+                'basePath' => '@webroot/upload',
+                'baseUrl' => '@web/upload',
+                'enableCsrf' => true, // default
+                'postFieldName' => 'Filedata', // default
+                'overwriteIfExist' => true,//如果文件已存在，是否覆盖
+                'format' => function (UploadAction $action) {
+                    $fileext = $action->uploadfile->getExtension();
+                    $filehash = sha1(uniqid() . time());
+                    $p1 = substr($filehash, 0, 2);
+                    $p2 = substr($filehash, 2, 2);
+                    return "{$p1}/{$p2}/{$filehash}.{$fileext}";
+                },//文件的保存方式
+                'validateOptions' => [
+                    'extensions' => ['jpg', 'png'],
+                    'maxSize' => 1 * 1024 * 1024, //file size
+                ],
+                'beforeValidate' => function (UploadAction $action) {
+                    //throw new Exception('test error');
+                },
+                'afterValidate' => function (UploadAction $action) {},
+                'beforeSave' => function (UploadAction $action) {},
+                'afterSave' => function (UploadAction $action) {
+                    //将图片上传到七牛云
+                    $qiniu = new Qiniu(\Yii::$app->params['qiniu']);
+                    $qiniu->uploadFile(
+                        $action->getSavePath(), $action->getWebUrl()
+                    );
+                    $url = $qiniu->getLink($action->getWebUrl());
+                    $action->output['fileUrl']  = $url;
+                },
+            ],
+        ];
     }
 }

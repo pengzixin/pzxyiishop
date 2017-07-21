@@ -13,7 +13,7 @@ class m170718_134618_create_article_detail_table extends Migration
     public function up()
     {
         $this->createTable('article_detail', [
-            'article_id' => $this->integer()->comment('文章ID'),
+            'article_id' => $this->primaryKey()->comment('文章ID'),
             'content'=>$this->text()->comment('文章内容'),
         ]);
     }
