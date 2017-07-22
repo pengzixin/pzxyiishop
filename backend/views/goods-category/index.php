@@ -10,7 +10,7 @@
     <?php foreach($categorys as $category):?>
     <tr>
         <td><?=$category->id?></td>
-        <td><?=$category->name?></td>
+        <td><?=str_repeat('--',$category['depth']).$category['name']?></td>
         <td><?=\backend\models\GoodsCategory::getParent($category->parent_id)->name;?></td>
         <td><?=$category->intro?></td>
         <td>

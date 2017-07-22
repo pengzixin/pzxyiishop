@@ -62,4 +62,12 @@ class GoodsCategory extends ActiveRecord{
         }
         return $model;
     }
+
+    public static function exceptionInfo($msg){
+        $infos = [
+            'Can not move a node when the target node is same.'=>'不能修改到自己分类下面',
+            'Can not move a node when the target node is child.'=>'不能修改到自己的子孙分类下面',
+        ];
+        return isset($infos[$msg])?$infos[$msg]:$msg;
+    }
 }
