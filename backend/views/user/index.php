@@ -6,6 +6,7 @@
         <th>序号</th>
         <th>用户名</th>
         <th>邮箱</th>
+        <th>角色</th>
         <th>最后登录时间</th>
         <th>最后登录ip</th>
         <th>操作</th>
@@ -15,6 +16,14 @@
         <td><?=$user->id?></td>
         <td><?=$user->username?></td>
         <td><?=$user->email?></td>
+        <td>
+            <select>
+                <option>所有角色</option>
+                <?php foreach(\Yii::$app->authManager->getRolesByUser($user->id) as $role):?>
+                <option><?=$role->name?></option>
+                <?php endforeach;?>
+            </select>
+        </td>
         <td><?=$user->lsat_login_time?date('Y-m-d H:i:s',$user->lsat_login_time):'从未登陆'?></td>
         <td><?=$user->lsat_login_ip?></td>
         <td>

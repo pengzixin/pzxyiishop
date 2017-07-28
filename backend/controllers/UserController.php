@@ -3,6 +3,7 @@ namespace backend\controllers;
 use backend\models\LoginForm;
 use backend\models\User;
 use yii\captcha\CaptchaAction;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Request;
@@ -26,6 +27,16 @@ class UserController extends Controller{
             if($model->validate()){
                 //验证通过
                 $model->save(false);
+                //实例化组件authManager
+              $authManager = \Yii::$app->authManager;
+                if(is_array($model->roles)){
+                    foreach($model->roles as $roleName){
+                        //得到角色对象
+                        $role=$authManager->getRole($roleName);
+                        //给用户添加角色
+                        if($role)$authManager->assign($role,$model->id);
+                    }
+                }
                 //跳转页面
                 \yii::$app->session->setFlash('success','添加成功');
                 return $this->redirect(['user/index']);
@@ -42,14 +53,32 @@ class UserController extends Controller{
         $model=User::findOne(['id'=>$id]);
         $model->password='';
         $request = new Request();
+        //实例化组件authManager
+        $authManager = \Yii::$app->authManager;
+        //得到角色，回显数据
+        $roles=$authManager->getRolesByUser($id);
+        //var_dump($role);exit;
+        $model->roles=ArrayHelper::map($roles,'name','name');
         //判断提交方式
         if($request->isPost){
+            //取消所有角色关联
+            if(is_array($roles)){
+                $authManager->revokeAll($id);
+            }
             //加载数据
             $model->load($request->post());
             //var_dump($model);exit;
             //验证数据
             if($model->validate()){//验证通过
                 $model->save(false);
+                if(is_array($model->roles)){
+                    foreach($model->roles as $roleName){
+                        //得到角色对象
+                        $role=$authManager->getRole($roleName);
+                        //给用户添加角色
+                        if($role)$authManager->assign($role,$model->id);
+                    }
+                }
                 //跳转页面
                 \yii::$app->session->setFlash('success','修改成功');
                 return $this->redirect(['user/index']);
@@ -64,6 +93,9 @@ class UserController extends Controller{
     //删除
     public function actionDelete($id){
         $model=User::findOne(['id'=>$id]);
+        //实例化组件authManager
+        $authManager = \Yii::$app->authManager;
+        $authManager->revokeAll($id);
         $model->delete();
         //跳转
         \Yii::$app->session->setFlash('success','删除成功');
@@ -115,7 +147,7 @@ class UserController extends Controller{
                 //加密密码
                 $model->password_hash=\Yii::$app->security->generatePasswordHash($model->newpssword);
                 $model->save();
-                \Yii::$app->session->setFlash('success','用户修改成功');
+                \Yii::$app->session->setFlash('success','密码修改成功');
                 \Yii::$app->user->logout();
                 return $this->redirect(['user/login']);
             }elseif(\Yii::$app->security->validatePassword($model->oldpassword,$model->password_hash) && $model->newpssword==$model->oldpassword){

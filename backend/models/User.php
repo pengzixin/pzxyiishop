@@ -9,6 +9,7 @@ class User extends ActiveRecord implements IdentityInterface{
     public $oldpassword;//旧密码
     public $newpssword;//新密码
     public $renewpssword;//确认新密码
+    public $roles=[];//角色
     const SCENARIO_ADD='add';
     const SCENARIO_CHPWD='ChPwd';
     public static $status_option=[
@@ -26,6 +27,7 @@ class User extends ActiveRecord implements IdentityInterface{
             ['renewpssword','compare','compareAttribute'=>'newpssword','message'=>'两次密码必须一致','on'=>self::SCENARIO_CHPWD],
             ['email','email'],
             [['email','username'],'unique'],
+            ['roles','safe'],
         ];
     }
     public function attributeLabels()
@@ -38,6 +40,7 @@ class User extends ActiveRecord implements IdentityInterface{
             'renewpssword'=>'确认新密码',
             'newpssword'=>'新密码',
             'oldpassword'=>'旧密码',
+            'roles'=>'角色',
         ];
     }
     //在save之前处理数据
