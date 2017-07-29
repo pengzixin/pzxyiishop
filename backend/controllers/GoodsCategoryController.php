@@ -1,5 +1,6 @@
 <?php
 namespace backend\controllers;
+use backend\filters\RbacFilter;
 use yii\db\Exception;
 use yii\web\Controller;
 use backend\models\GoodsCategory;
@@ -122,5 +123,14 @@ class GoodsCategoryController extends Controller{
         $model->deleteWithChildren();
         \Yii::$app->session->setFlash('success','删除成功');
         return $this->redirect(['index']);
+    }
+    public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilter::className(),
+                'only'=>['add','edit','delete','index']
+            ]
+        ];
     }
 }

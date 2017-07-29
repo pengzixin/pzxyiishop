@@ -1,5 +1,6 @@
 <?php
 namespace backend\controllers;
+use backend\filters\RbacFilter;
 use backend\models\Goods;
 use backend\models\GoodsGallery;
 use flyok666\qiniu\Qiniu;
@@ -100,5 +101,15 @@ class GoodsGalleryController extends Controller{
             return 'fail';
         }
 
+    }
+
+    public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilter::className(),
+                'only'=>['add','edit','delete','index']
+            ]
+        ];
     }
 }

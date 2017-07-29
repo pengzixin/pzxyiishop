@@ -1,5 +1,6 @@
 <?php
 namespace backend\controllers;
+use backend\filters\RbacFilter;
 use backend\models\LoginForm;
 use backend\models\User;
 use yii\captcha\CaptchaAction;
@@ -170,6 +171,15 @@ class UserController extends Controller{
                 //验证码的长度
                 'minLength'=>4,
                 'maxLength'=>4,
+            ]
+        ];
+    }
+    public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilter::className(),
+                'except'=>['login','logout','captcha'],
             ]
         ];
     }

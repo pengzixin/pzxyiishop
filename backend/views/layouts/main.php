@@ -28,26 +28,28 @@ AppAsset::register($this);
 <div class="wrap">
     <?php
     NavBar::begin([
-        'brandLabel' => 'My Company',
+        'brandLabel' => '商城后台管理',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-    $menuItems = [
-        ['label' => 'Home', 'url' => ['/site/index']],
-    ];
+//    $menuItems = [
+//        ['label' => 'Home', 'url' => ['/site/index']],
+//        \backend\models\User::actionGetMenus(),
+//    ];
     if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
+        $menuItems[] = ['label' => '登录', 'url' => ['/user/login']];
     } else {
         $menuItems[] = '<li>'
-            . Html::beginForm(['/site/logout'], 'post')
+            . Html::beginForm(['/user/logout'], 'post')
             . Html::submitButton(
-                'Logout (' . Yii::$app->user->identity->username . ')',
+                '注销 (' . Yii::$app->user->identity->username . ')',
                 ['class' => 'btn btn-link logout']
             )
             . Html::endForm()
             . '</li>';
+      $menuItems =\yii\helpers\ArrayHelper::merge(\backend\models\User::GetMenus(),$menuItems);//;
     }
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],

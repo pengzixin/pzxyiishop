@@ -1,5 +1,6 @@
 <?php
 namespace backend\controllers;
+use backend\filters\RbacFilter;
 use backend\models\Brand;
 use backend\models\Goods;
 use backend\models\GoodsCategory;
@@ -152,6 +153,16 @@ class GoodsController extends Controller{
                     $action->output['fileUrl']  = $url;
                 },
             ],
+        ];
+    }
+
+    public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilter::className(),
+                'only'=>['add','edit','delete','index']
+            ]
         ];
     }
 

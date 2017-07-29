@@ -62,6 +62,24 @@ class User extends ActiveRecord implements IdentityInterface{
         return parent::beforeSave($insert);
     }
 
+    public static function GetMenus(){
+        $MenuItems=[];
+        $menus=Menu::find()->where(['parent_id'=>0])->all();
+        foreach($menus as $menu){
+            $children=Menu::getChildren($menu->id);
+                $items=['label'=>$menu->label,'items'=>[]];
+                foreach( $children as $child){
+                   if(\Yii::$app->user->can($child->url)){
+                       $items['items'][]=['label'=>$child->label,'url'=>[$child->url]];
+                   }
+                }
+            if(!empty($items['items'])){
+                $MenuItems[]=$items;
+            }
+        }
+        return $MenuItems;
+    }
+
     /**
      * Finds an identity by the given ID.
      * @param string|int $id the ID to be looked for
