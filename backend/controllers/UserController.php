@@ -107,7 +107,6 @@ class UserController extends Controller{
     public function actionLogin(){
         //实例化对象
         $model=new LoginForm();
-        $user =new User();
         $request = new Request();
         //判断提交方式
         if($request->isPost){
