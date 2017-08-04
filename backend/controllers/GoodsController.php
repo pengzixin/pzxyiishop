@@ -49,14 +49,19 @@ class GoodsController extends Controller{
             if($model->validate() && $model2->validate()){
                 //验证成功
                 //生成货号
-                $model->sn=GoodsDayCount::getSn();
-                $model->status=1;
-                $model->create_time=time();
-                $model->save();
-                $model2->goods_id=$model->id;
-                $model2->save();
-                \Yii::$app->session->setFlash('success','商品添加成功');
-                return $this->redirect(["goods-gallery/add?id=$model->id"]);
+                $category=GoodsCategory::findOne(['id'=>$model->goods_category_id]);
+                if(!$category->isLeaf()){
+                    $model->addError('goods_category_id','只能添加到三级分类下面');
+                }else{
+                    $model->sn=GoodsDayCount::getSn();
+                    $model->status=1;
+                    $model->create_time=time();
+                    $model->save();
+                    $model2->goods_id=$model->id;
+                    $model2->save();
+                    \Yii::$app->session->setFlash('success','商品添加成功');
+                    return $this->redirect(["goods-gallery/add?id=$model->id"]);
+                }
             }else{//验证失败
                 var_dump($model->getErrors());exit;
             }

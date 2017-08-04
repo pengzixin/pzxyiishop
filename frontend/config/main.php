@@ -45,7 +45,13 @@ return [
             'rules' => [
             ],
         ],
-
+        'sms'=>[
+            'class'=>\frontend\components\AliyunSms::className(),
+            'accessKeyId'=>'LTAIR7ndqp1uiAH1',
+            'accessKeySecret'=>'D6AFkDs1XgVcpvW2GgekHpxrastVfM',
+            'signName'=>'彭梓昕',
+            'templateCode'=>'SMS_80035065'
+        ]
     ],
     'params' => $params,
 ];

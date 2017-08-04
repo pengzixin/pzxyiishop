@@ -3,10 +3,12 @@
 namespace frontend\controllers;
 
 use frontend\models\Address;
+use frontend\models\Cart;
 use frontend\models\Locations;
 use frontend\models\LoginForm;
 use frontend\models\Member;
 use yii\captcha\CaptchaAction;
+use yii\web\Cookie;
 use yii\web\NotFoundHttpException;
 use yii\web\Request;
 
@@ -42,14 +44,45 @@ class MemberController extends \yii\web\Controller
         if($model->load(\Yii::$app->request->post())){
             //验证数据
             if( $model->validate() && $model->login()){
+                //登陆成功，取出用户Id
+                $member_id=\Yii::$app->user->identity->id;
+                //q取出cookie中的购物信息
+                $cookies=\Yii::$app->request->cookies;
+                $carts=$cookies->get('cart');
+                if($carts){//如果存在购物信息
+                    $carts=unserialize($carts);
+                    foreach(array_keys($carts) as $goods_id){//遍历键值，得到商品id
+                        $model=Cart::find()->andWhere(['goods_id'=>$goods_id])
+                            ->andWhere(['member_id'=>$member_id])
+                            ->one();
+                        if($model){
+                            $model->amount+=$carts[$goods_id];
+                            $model->save();
+                        }else{
+                            $model=new Cart();
+                            $model->goods_id=$goods_id;
+                            $model->amount=$carts[$goods_id];
+                            $model->member_id=$member_id;
+                            $model->save();
+                        }
+                    }
+                   \Yii::$app->response->cookies->remove('cart');
+                }
+
                 //var_dump($model);exit;
                 \yii::$app->session->setFlash('success','登陆成功');
-                return $this->redirect(['member/index']);
+                return $this->redirect(['goods/index']);
             }else{
                 //print_r($model->getErrors());exit;
             }
         }
         return $this->render('login',['model'=>$model]);
+    }
+
+    //注销，退出登录
+    public function actionLogout(){
+        \Yii::$app->user->logout();
+        return $this->redirect(['goods/index']);
     }
     //=================================登录结束==========================
 
@@ -137,5 +170,15 @@ class MemberController extends \yii\web\Controller
                 'maxLength'=>4,
             ]
         ];
+    }
+
+    //测试短信发送
+    public function actionSms($tel)
+    {
+        $dcode=rand(1000,9999);
+        //$tel=18228185755;
+        $res = \Yii::$app->sms->setPhoneNumbers($tel)->setTemplateParam(['code'=>$dcode])->send();
+        //将短信验证码保存到session。
+        \Yii::$app->session->set('code_'.$tel,$dcode);
     }
 }

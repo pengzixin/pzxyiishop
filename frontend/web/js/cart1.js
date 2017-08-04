@@ -24,6 +24,8 @@ $(function(){
 		});
 
 		$("#total").text(total.toFixed(2));
+		var goods_id = $(this).closest('tr').attr('data-id');
+        changeNum(goods_id,amount.val());
 	});
 
 	//增加
@@ -40,6 +42,8 @@ $(function(){
 		});
 
 		$("#total").text(total.toFixed(2));
+        var goods_id = $(this).closest('tr').attr('data-id');
+        changeNum(goods_id,amount.val());
 	});
 
 	//直接输入
@@ -58,6 +62,13 @@ $(function(){
 		});
 
 		$("#total").text(total.toFixed(2));
-
+        var goods_id = $(this).closest('tr').attr('data-id');
+        changeNum(goods_id,$(this).val());
 	});
 });
+
+var changeNum = function(goods_id,amount){
+	$.getJSON('chg-cart',{goods_id:goods_id,amount:amount},function(data){
+		console.log(data);
+	});
+};

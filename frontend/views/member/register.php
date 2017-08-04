@@ -80,11 +80,12 @@
                     <li id="tel">
                         <label for="">手机号码：</label>
                         <input type="text" class="txt" value="<?=$model->tel?>" name="Member[tel]" id="tel" placeholder=""/>
+                        <p style="padding-left: 5px;color: red"></p>
                     </li>
-<!--                    <li>-->
-<!--                        <label for="">验证码：</label>-->
-<!--                        <input type="text" class="txt" value="" placeholder="请输入短信验证码" name="captcha" disabled="disabled" id="captcha"/> <input type="button" onclick="bindPhoneNum(this)" id="get_captcha" value="获取验证码" style="height: 25px;padding:3px 8px"/>-->
-<!---->
+                    <li id="captcha">
+                        <label for="">验证码：</label>
+                        <input type="text" class="txt" value="" placeholder="请输入短信验证码" name="Member[captcha]" disabled="disabled" id="dcaptcha"/> <input type="button" onclick="bindPhoneNum(this)" id="get_captcha" value="获取验证码" style="height: 25px;padding:3px 8px"/>
+                        <p style="padding-left: 5px;color: red"></p>
                     </li>
                     <li class="checkcode" id="code">
                         <?=$form->field($model,'code')->widget(\yii\captcha\Captcha::className(),['captchaAction'=>'member/captcha'])?>
@@ -146,9 +147,9 @@
 <script type="text/javascript">
     function bindPhoneNum(){
         //启用输入框
-        $('#captcha').prop('disabled',false);
+        $('#dcaptcha').prop('disabled',false);
 
-        var time=30;
+        var time=60;
         var interval = setInterval(function(){
             time--;
             if(time<=0){
@@ -171,12 +172,29 @@
     }
 
     ?>
-    //更换验证码
+    //更换图片验证码
     $("#member-code-image").click(function(){
         $.getJSON('/member/captcha?refresh=1',function(json){
             $("#member-code-image").attr('src',json.url);
             //console.log(json.url);
         });
+    });
+    var telphon='';
+    $('#tel input').blur(function () {
+        telphon=$('#tel input').val();
+        //console.debug(telphon);
+    });
+    $('#get_captcha').click(function () {
+        var reg=/^1[3-8]{1}\d{9}$/;
+        if(reg.test(telphon)){
+            var url="/member/sms";
+            var row='tel='+telphon;
+            $.getJSON(url,row,function () {
+
+            })
+        }else {
+            $('#tel p').text('手机号错误');
+        }
     });
 </script>
 

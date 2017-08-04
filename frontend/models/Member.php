@@ -25,6 +25,7 @@ class Member extends \yii\db\ActiveRecord implements IdentityInterface
     public $password;
     public $repassword;
     public $code;//验证码
+    public $captcha;//短信验证码
     /**
      * @inheritdoc
      */
@@ -39,7 +40,7 @@ class Member extends \yii\db\ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['username','password','email','repassword','tel'],'required'],
+            [['username','password','email','repassword','tel','captcha'],'required'],
             [['username','email'],'unique'],
             [['last_login_time', 'last_login_ip', 'status', 'created_at', 'updated_at'], 'integer'],
             [['username'], 'string', 'max' => 50],
@@ -49,9 +50,15 @@ class Member extends \yii\db\ActiveRecord implements IdentityInterface
             ['repassword','compare','compareAttribute'=>'password','message'=>'两次密码必须一致'],
             ['email','email'],
             ['code','captcha','captchaAction'=>'member/captcha'],
+            ['captcha','ValidateCaptcha']
         ];
     }
-
+    public function ValidateCaptcha(){
+        $captcha1=\Yii::$app->session->get('code_'.$this->tel);
+        if($this->captcha!=$captcha1){
+            $this->addError('手机验证码不正确');
+        }
+    }
     /**
      * @inheritdoc
      */
@@ -72,6 +79,7 @@ class Member extends \yii\db\ActiveRecord implements IdentityInterface
             'password'=>'密码',
             'repassword'=>'确认密码',
             'code'=>'验证码',
+            'captcha'=>'短信验证码',
         ];
     }
 

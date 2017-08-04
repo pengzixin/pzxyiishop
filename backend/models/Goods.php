@@ -8,10 +8,10 @@ class Goods extends ActiveRecord{
     public static $sale_option=[0=>'下架',1=>'在售'];
     //查询出所有商品分类
     public static function getCategory(){
-        $categorys=GoodsCategory::find()->select(['name','id','depth'])->asArray()->all();
+        $categorys=GoodsCategory::find()->select(['name','id','depth'])->orderBy('tree,lft')->asArray()->all();
         //var_dump($categorys);exit;
         foreach($categorys as &$category){
-            $category['name']=str_repeat('--',$category['depth']).$category['name'];
+            $category['name']=str_repeat('—',$category['depth']).$category['name'];
         }
        $categorys=ArrayHelper::map($categorys,'id','name');
         return $categorys;
