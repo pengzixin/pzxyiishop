@@ -247,6 +247,7 @@
         var total=parseFloat($("#total").text())+parseFloat(price);
         $("#pay-total").text(total.toFixed(2));
         $("#zpay-total").text(total.toFixed(2));
+        console.log()
     });
 
 </script>
