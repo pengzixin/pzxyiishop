@@ -7,7 +7,9 @@ use frontend\models\Cart;
 use frontend\models\Locations;
 use frontend\models\LoginForm;
 use frontend\models\Member;
+use frontend\models\Order;
 use yii\captcha\CaptchaAction;
+use yii\filters\AccessControl;
 use yii\web\Cookie;
 use yii\web\NotFoundHttpException;
 use yii\web\Request;
@@ -15,7 +17,7 @@ use yii\web\Request;
 class MemberController extends \yii\web\Controller
 {
     public $layout=false;
-    //==================注册结束=============================
+    //==================注册开始=============================
     public function actionRegister(){
         //实例化模型
         $model = new Member();
@@ -23,18 +25,13 @@ class MemberController extends \yii\web\Controller
         if($model->load(\Yii::$app->request->post()) && $model->validate()){
                 $model->save(false);
             \yii::$app->session->setFlash('success','注册成功');
-            return $this->redirect(['member/index']);
+            return $this->redirect(['member/login']);
         }
         //调用视图
         return $this->render('register',['model'=>$model]);
     }
-//=====================注册开始======================================
+//=====================注册结束======================================
 
-
-    public function actionIndex()
-    {
-        echo '这是首页';
-    }
 
     //========================登录开始================================
     public function actionLogin(){
@@ -180,5 +177,33 @@ class MemberController extends \yii\web\Controller
         $res = \Yii::$app->sms->setPhoneNumbers($tel)->setTemplateParam(['code'=>$dcode])->send();
         //将短信验证码保存到session。
         \Yii::$app->session->set('code_'.$tel,$dcode);
+    }
+
+    //============================订单展示页面开始==============================》
+    public function actionOrderList(){
+        //根据用户ID查询出所有订单
+        $member_id=\Yii::$app->user->identity->id;
+        //var_dump($member_id);exit;
+        $orders=Order::find()->where(['member_id'=>$member_id])->all();
+        //调用视图，分配数据
+        return $this->render('order-list',['orders'=>$orders]);
+    }
+    //============================订单展示页面结束==============================》
+
+    public function behaviors()
+    {
+        return [
+            'ACF'=>[
+                'class'=>AccessControl::className(),
+                'only'=>['order-list','chg-status','edit-address','del-address','address'],//哪些操作需要使用该过滤器
+                'rules'=>[
+                    [
+                        'allow'=>true,//是否允许
+                        'actions'=>['order-list','chg-status','edit-address','del-address','address'],//指定操作
+                        'roles'=>['@'],//指定角色 ?表示未认证用户(未登录) @表示已认证用户(已登录)
+                    ],
+                ]
+            ]
+        ];
     }
 }

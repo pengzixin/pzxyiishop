@@ -12,10 +12,16 @@ class GoodsController extends Controller{
     public $layout=false;
     //商品列表页面
     public function actionList($pid){
-        //实例化模型
-        $id=GoodsCategory::getId($pid);
-        //var_dump($id);exit;
-        $query= Goods::find()->where(['in','goods_category_id',$id]);
+        //实例化模型);
+        //判断是几级分类
+        $cate = \backend\models\GoodsCategory::findOne(['id'=>$pid]);
+        if($cate->depth == 2){
+            $query = Goods::find()->where(['goods_category_id'=>$pid]);
+        }else{
+            $ids = $cate->leaves()->asArray()->column();
+            //var_dump($ids);exit;
+            $query = Goods::find()->where(['in','goods_category_id',$ids]);
+        }
         //总条数
         $total=$query->count();
         $pageSize=3;

@@ -6,6 +6,7 @@ use frontend\models\Goods;
 use frontend\models\Order;
 use frontend\models\OrderGoods;
 use yii\db\Exception;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Request;
 
@@ -86,7 +87,7 @@ class OrderController extends Controller{
                             $order_goods->logo=$goods->logo;
                             $order_goods->price=$goods->shop_price;
                             $order_goods->amount=$cart->amount;
-                            $order_goods->total=$cart->amount*$goods->shop_price;
+                            $order_goods->total=($cart->amount*$goods->shop_price)+$model->delivery_price;
                             $order_goods->save();
                             //改变订单表的统计金额,将购买的每个商品的价钱相加
                             $total+=$order_goods->total;
@@ -102,7 +103,7 @@ class OrderController extends Controller{
                     }
                     //订单生成成功后，计算订单表总金额
                     $model->total=$total;
-                    $model->update(false);
+                    $model->update(false,['total']);
                     //提交事务
                     $transaction->commit();
                     return json_encode('success');
@@ -122,5 +123,20 @@ class OrderController extends Controller{
         return $this->render('end');
     }
 
-
+    public function behaviors()
+    {
+        return [
+            'ACF'=>[
+                'class'=>AccessControl::className(),
+                'only'=>['order','add-order'],//哪些操作需要使用该过滤器
+                'rules'=>[
+                    [
+                        'allow'=>true,//是否允许
+                        'actions'=>['order','add-order'],//指定操作
+                        'roles'=>['@'],//指定角色 ?表示未认证用户(未登录) @表示已认证用户(已登录)
+                    ],
+                ]
+            ]
+        ];
+    }
 }

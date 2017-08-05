@@ -145,24 +145,35 @@
 <!-- 底部版权 end -->
 <script type="text/javascript" src="<?=\Yii::getAlias('@web')?>/js/jquery-1.8.3.min.js"></script>
 <script type="text/javascript">
-    function bindPhoneNum(){
-        //启用输入框
-        $('#dcaptcha').prop('disabled',false);
+    function bindPhoneNum() {
+        var telphon=$('#tel input').val();
+        var reg = /^1[3-8]{1}\d{9}$/;
+        if (reg.test(telphon)) {
+            var url = "/member/sms";
+            var row = 'tel=' + telphon;
+            $.getJSON(url, row, function () {
 
-        var time=60;
-        var interval = setInterval(function(){
-            time--;
-            if(time<=0){
-                clearInterval(interval);
-                var html = '获取验证码';
-                $('#get_captcha').prop('disabled',false);
-            } else{
-                var html = time + ' 秒后再次获取';
-                $('#get_captcha').prop('disabled',true);
-            }
+            });
+            //启用输入框
+            $('#dcaptcha').prop('disabled', false);
+            var time = 60;
+            var interval = setInterval(function () {
+                time--;
+                if (time <= 0) {
+                    clearInterval(interval);
+                    var html = '获取验证码';
+                    $('#get_captcha').prop('disabled', false);
+                } else {
+                    var html = time + ' 秒后再次获取';
+                    $('#get_captcha').prop('disabled', true);
+                }
 
-            $('#get_captcha').val(html);
-        },1000);
+                $('#get_captcha').val(html);
+            }, 1000);
+
+        }else{
+            $('#tel p').text('手机号错误');
+        }
     }
     <?php
     if($model->getErrors()) {
@@ -178,23 +189,6 @@
             $("#member-code-image").attr('src',json.url);
             //console.log(json.url);
         });
-    });
-    var telphon='';
-    $('#tel input').blur(function () {
-        telphon=$('#tel input').val();
-        //console.debug(telphon);
-    });
-    $('#get_captcha').click(function () {
-        var reg=/^1[3-8]{1}\d{9}$/;
-        if(reg.test(telphon)){
-            var url="/member/sms";
-            var row='tel='+telphon;
-            $.getJSON(url,row,function () {
-
-            })
-        }else {
-            $('#tel p').text('手机号错误');
-        }
     });
 </script>
 

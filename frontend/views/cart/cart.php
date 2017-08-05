@@ -91,7 +91,7 @@
         </tfoot>
     </table>
     <div class="cart_btn w990 bc mt10">
-        <a href="" class="continue">继续购物</a>
+        <a href="/goods/index" class="continue">继续购物</a>
         <a href="/order/order" class="checkout">结 算</a>
     </div>
 </div>

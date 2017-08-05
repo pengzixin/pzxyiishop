@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <title>收货地址</title>
+    <title>订单页面</title>
     <link rel="stylesheet" href="<?=\Yii::getAlias('@web')?>/style/base.css" type="text/css">
     <link rel="stylesheet" href="<?=\Yii::getAlias('@web')?>/style/global.css" type="text/css">
     <link rel="stylesheet" href="<?=\Yii::getAlias('@web')?>/style/header.css" type="text/css">
     <link rel="stylesheet" href="<?=\Yii::getAlias('@web')?>/style/home.css" type="text/css">
-    <link rel="stylesheet" href="<?=\Yii::getAlias('@web')?>/style/address.css" type="text/css">
+    <link rel="stylesheet" href="<?=\Yii::getAlias('@web')?>/style/order.css" type="text/css">
     <link rel="stylesheet" href="<?=\Yii::getAlias('@web')?>/style/bottomnav.css" type="text/css">
     <link rel="stylesheet" href="<?=\Yii::getAlias('@web')?>/style/footer.css" type="text/css">
 
@@ -24,7 +24,7 @@
         </div>
         <div class="topnav_right fr">
             <ul>
-                <li>您好，欢迎来到京西！[<a href="/member/login">登录</a>] [<a href="/member/register">免费注册</a>] </li>
+                <li>您好，欢迎来到京西！[<a href="login.html">登录</a>] [<a href="register.html">免费注册</a>] </li>
                 <li class="line">|</li>
                 <li>我的订单</li>
                 <li class="line">|</li>
@@ -111,7 +111,7 @@
         <div class="cart fl">
             <dl>
                 <dt>
-                    <a href="/cart/cart">去购物车结算</a>
+                    <a href="">去购物车结算</a>
                     <b></b>
                 </dt>
                 <dd>
@@ -356,6 +356,7 @@
 
                     </div>
                 </div>
+
                 <div class="cat">
                     <h3><a href="">礼品箱包、钟表、珠宝</a><b></b></h3>
                     <div class="cat_detail none">
@@ -434,7 +435,7 @@
         <div class="menu_wrap">
             <dl>
                 <dt>订单中心 <b></b></dt>
-                <dd><b>.</b><a href="">我的订单</a></dd>
+                <dd class="cur"><b>.</b><a href="">我的订单</a></dd>
                 <dd><b>.</b><a href="">我的关注</a></dd>
                 <dd><b>.</b><a href="">浏览历史</a></dd>
                 <dd><b>.</b><a href="">我的团购</a></dd>
@@ -442,7 +443,7 @@
 
             <dl>
                 <dt>账户中心 <b></b></dt>
-                <dd class="cur"><b>.</b><a href="">账户信息</a></dd>
+                <dd><b>.</b><a href="">账户信息</a></dd>
                 <dd><b>.</b><a href="">账户余额</a></dd>
                 <dd><b>.</b><a href="">消费记录</a></dd>
                 <dd><b>.</b><a href="">我的积分</a></dd>
@@ -461,66 +462,48 @@
 
     <!-- 右侧内容区域 start -->
     <div class="content fl ml10">
-        <div class="address_hd">
-            <h3>收货地址薄</h3>
-            <?php foreach($address as $addres):?>
+        <div class="order_hd">
+            <h3>我的订单</h3>
             <dl>
-                <dt>1.<?=$addres->name?><?=$addres->province?><?=$addres->center?><?=$addres->area?> <?=$addres->address?> <?=$addres->tel?> </dt>
-                <dd>
-                    <a href="/member/edit-address?id=<?=$addres->id?>">修改</a>
-                    <a href="/member/del-address?id=<?=$addres->id?>">删除</a>
-                    <a href="/member/chg-status?id=<?=$addres->id?>">设为默认地址</a>
-                </dd>
+                <dt>便利提醒：</dt>
+                <dd>待付款（0）</dd>
+                <dd>待确认收货（0）</dd>
+                <dd>待自提（0）</dd>
             </dl>
-            <?php endforeach;?>
+
+            <dl>
+                <dt>特色服务：</dt>
+                <dd><a href="">我的预约</a></dd>
+                <dd><a href="">夺宝箱</a></dd>
+            </dl>
         </div>
 
-        <div class="address_bd mt10">
-            <h4>新增收货地址</h4>
-<!--            <form action="" name="address_form">-->
-            <?php $form = \yii\widgets\ActiveForm::begin()?>
-                <ul>
-                    <li id="name">
-                        <label for=""><span>*</span>收 货 人：</label>
-                        <input type="text" name="Address[name]" class="txt" value="<?=$model->name?>" />
-                        <p style="padding-left: 65px;color: red"></p>
-                    </li>
-                    <li id="area">
-                        <label for=""><span>*</span>所在地区：</label>
-                        <select name="Address[province]" id="province">
-                            <option value="">请选择省份---</option>
-                        </select>
-                        <select name="Address[center]" id="center">
-                            <option value="">请选择城市---</option>
-                        </select>
-
-                        <select name="Address[area]" id="areas">
-                            <option value="">请选择区县---</option>
-                        </select>
-                        <p style="padding-left: 65px;color: red"></p>
-                    </li>
-                    <li id="address">
-                        <label for=""><span>*</span>详细地址：</label>
-                        <input type="text" name="Address[address]" class="txt address" value="<?=$model->address?>" />
-                        <p style="padding-left: 65px;color: red"></p>
-                    </li>
-                    <li id="tel">
-                        <label for=""><span>*</span>手机号码：</label>
-                        <input type="text" name="Address[tel]" class="txt" value="<?=$model->tel?>"/>
-                        <p style="padding-left: 65px;color: red"></p>
-                    </li>
-                    <li>
-                        <label for="">&nbsp;</label>
-                        <input type="checkbox" name="Address[status]" class="check" />设为默认地址
-                    </li>
-                    <li>
-                        <label for="">&nbsp;</label>
-                        <input type="submit" class="btn" value="保存"/>
-                    </li>
-                </ul>
-            <?php \yii\widgets\ActiveForm::end()?>
+        <div class="order_bd mt10">
+            <table class="orders">
+                <thead>
+                <tr>
+                    <th width="10%">订单号</th>
+                    <th width="20%">订单商品</th>
+                    <th width="10%">收货人</th>
+                    <th width="20%">订单金额</th>
+                    <th width="20%">下单时间</th>
+                    <th width="10%">订单状态</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach($orders as $order):?>
+                <tr>
+                    <td><a href=""><?=$order->id?></a></td>
+                    <td><a href=""><img src="<?=\Yii::getAlias('@web')?>/images/order1.jpg" alt="" /></a></td>
+                    <td><?=$order->name?></td>
+                    <td><?=$order->total?> <?=$order->payment_name?></td>
+                    <td><?=date('Y-m-d H:i:s',$order->create_time)?></td>
+                    <td><?=$order->status?></td>
+                </tr>
+                <?php endforeach;?>
+                </tbody>
+            </table>
         </div>
-
     </div>
     <!-- 右侧内容区域 end -->
 </div>
@@ -617,69 +600,6 @@
         <a href=""><img src="<?=\Yii::getAlias('@web')?>/images/beian.gif" alt="" /></a>
     </p>
 </div>
-<script type="text/javascript" src="<?=\Yii::getAlias('@web')?>/js/jquery-1.8.3.min.js"></script>
 <!-- 底部版权 end -->
-<script type="text/javascript">
-    //页面加载完成就获取省份列表
-    $(function(){
-        var url='/member/locations';
-        var args='id=0';
-        $.getJSON(url,args,function(data){
-            //将省级数据放入第一个下拉框中
-           // console.debug(data);
-            //使用遍历的方式获取出没有个省份
-            $(data).each(function(i,v){
-                var html='<option date="'+v.id+'">'+v.name+'</option>';
-                //console.debug($("#province"));
-                //将HTML代码放到页面中
-                $(html).appendTo($('#province'));
-            });
-        });
-
-        //获取省级下面对应的城市
-        $('#province').change(function(){
-            //清除center内除开第一行的所有选项
-            $('#center option:not(:first)').remove();
-            //清除area内除开第一行的所有选项
-            $('#areas option:not(:first)').remove();
-            var pid=$("#province>option:selected").attr("date");//获取选中的省级的ID
-            var args='id='+pid;
-            //console.debug(pid);
-            $.getJSON(url,args,function(data){
-                //console.debug(e);
-                $(data).each(function(i,v){//遍历取出省级下面对应的市级
-                    //console.debug(v);
-                    var html='<option date="'+ v.id+'">'+v.name+'</option>';
-                    //将HTML代码放到页面中
-                    $(html).appendTo($('#center'));
-                });
-            });
-        });
-
-        //获取城市下面对应的区县
-        $('#center').change(function(){
-            $('#areas option:not(:first)').remove();//清除area内除开第一行的所有选项
-            var pid=$("#center>option:selected").attr("date");;//获取选中的市级的ID
-            var args='id='+pid;//根据父ID等于市级ID取出市级下面对应的区县
-            //console.debug(args);
-            $.getJSON(url,args,function(data){
-                //console.debug(e);
-                $(data).each(function(i,v){//遍历取出对应的区县
-                    //console.debug(v);
-                    var html='<option date="'+v.id+'">'+v.name+'</option>';
-                    //将HTML代码放到页面中
-                    $(html).appendTo($('#areas'));
-                });
-            });
-        });
-    });
-<?php
-    if($model->getErrors()) {
-        foreach ($model->errors as $name => $error) {
-            echo '$("#' . $name . ' p").text("' . implode(',', $error) . '");';
-        }
-    }
-?>
-</script>
 </body>
 </html>

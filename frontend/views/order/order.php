@@ -61,6 +61,7 @@
     <div class="fillin_bd">
         <!-- 收货人信息  start-->
         <div class="address">
+            <a href="/member/address"><h3>新增收货地址</h3></a>
             <h3>收货人信息</h3>
             <div class="address_info">
                 <?php foreach($address as $addres):?>
@@ -83,13 +84,13 @@
                         <th class="col3">运费标准</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="delivery">
                     <?php foreach($deliveries as $key=>$delivery):?>
-                    <tr >
+                    <tr>
                         <td>
                             <input type="radio" name="delivery" <?=$delivery['default']?'checked':''?> value="<?=$key?>" /><?=$delivery['name']?>
                         </td>
-                        <td><?=$delivery['price']?></td>
+                        <td id="price"><?=$delivery['price']?></td>
                         <td><?=$delivery['detail']?></td>
                     </tr>
                     <?php endforeach;?>
@@ -152,12 +153,15 @@
                 </tr>
                 </thead>
                 <tbody>
+                <?php $count=0;$total=0?>
                 <?php foreach($goods as $good):?>
                 <tr>
                     <td class="col1"><a href=""><img src="<?=$good['logo']?>" alt="" /></a>  <strong><a href=""><?=$good['name']?></a></strong></td>
                     <td class="col3"><?=$good['shop_price']?></td>
                     <td class="col4"> <?=$carts[$good['id']]?></td>
+                    <?php $count+=$carts[$good['id']]?>
                     <td class="col5"><span><?=sprintf("%.2f",$good['shop_price']*$carts[$good['id']])?></span></td>
+                    <?php $total+=$good['shop_price']*$carts[$good['id']]?>
                 </tr>
                 <?php endforeach;?>
                 </tbody>
@@ -166,20 +170,16 @@
                     <td colspan="5">
                         <ul>
                             <li>
-                                <span>4 件商品，总商品金额：</span>
-                                <em>￥5316.00</em>
-                            </li>
-                            <li>
-                                <span>返现：</span>
-                                <em>-￥240.00</em>
+                                <span><?=$count?> 件商品，总商品金额：</span>
+                                <em id="total"><?=sprintf("%.2f",$total)?></em>
                             </li>
                             <li>
                                 <span>运费：</span>
-                                <em>￥10.00</em>
+                                <em>￥<span id="dprice"></span></em>
                             </li>
-                            <li>
+                            <li id="">
                                 <span>应付总额：</span>
-                                <em>￥5076.00</em>
+                                <em id="pay-total"></em>
                             </li>
                         </ul>
                     </td>
@@ -193,7 +193,7 @@
 
     <div class="fillin_ft">
         <a id="sub-mit" href="javascript:;"><span>提交订单</span></a>
-        <p>应付总额：<strong>￥5076.00元</strong></p>
+        <p>应付总额：<strong id="zpay-total"></strong></p>
 
     </div>
 </div>
@@ -238,7 +238,17 @@
                 console.log(data);
                 window.location.href='/order/end';
             });
-    })
+    });
+
+    $("#delivery tr").click(function(){
+        var price=$(this).find("input").closest("td").next("td").text();
+        //console.log(price);
+        $("#dprice").text(price);
+        var total=parseFloat($("#total").text())+parseFloat(price);
+        $("#pay-total").text(total.toFixed(2));
+        $("#zpay-total").text(total.toFixed(2));
+    });
+
 </script>
 </body>
 </html>
