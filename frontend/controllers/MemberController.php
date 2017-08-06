@@ -172,11 +172,31 @@ class MemberController extends \yii\web\Controller
     //测试短信发送
     public function actionSms($tel)
     {
+
+        $redis= new \Redis();
+        $redis->connect('127.0.0.1');
+        //=============防止短信被盗刷====================》
+        //1、限制每个手机每天只能发送5条
+        //获取redis中保存的手机发送次数
+        $times=$redis->get('times_'.$tel.'_'.date('Ymd'));
+        $res=['status'=>0,'msg'=>''];
+        if($times && $times>=1){//判断存在该手机次数，并且次数大于3
+            $res['msg']='次数上限，明天再试';
+            return json_encode($res);
+        }
+        if($redis->get('code_'.$tel)){
+            $res['msg']="'请等待'.$redis->ttl('code_'.$tel).'秒后，再试'";
+            return json_encode($res);
+        }
+
         $dcode=rand(1000,9999);
         //$tel=18228185755;
-        $res = \Yii::$app->sms->setPhoneNumbers($tel)->setTemplateParam(['code'=>$dcode])->send();
+        \Yii::$app->sms->setPhoneNumbers($tel)->setTemplateParam(['code'=>$dcode])->send();
         //将短信验证码保存到session。
-        \Yii::$app->session->set('code_'.$tel,$dcode);
+        $redis->set('code_'.$tel,$dcode,60);
+        $times=$redis->incr('times_'.$tel.'_'.date('Ymd'));//记录每个手机发送的次数
+        $res['status']=1;
+        return json_encode($res);
     }
 
     //============================订单展示页面开始==============================》

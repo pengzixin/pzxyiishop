@@ -49,6 +49,8 @@ class GoodsController extends Controller{
     //首页展示
     public function actionIndex(){
         $categorys= GoodsCategory::find()->where(['parent_id'=>0])->all();
-        return $this->render('index',['categorys'=>$categorys]);
+        $contents=$this->render('index',['categorys'=>$categorys]);
+        file_put_contents('index.html',$contents);
+        return $contents;
     }
 }

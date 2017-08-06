@@ -23,7 +23,13 @@
         </div>
         <div class="topnav_right fr">
             <ul>
-                <li>您好，欢迎来到京西！[<a href="/member/login"">登录</a>] [<a href="/member/register">免费注册</a>] </li>
+                <li>您好，欢迎来到京西！[
+                    <?php if(Yii::$app->user->isGuest):?>
+                        <a href="/member/login">登录</a>
+                    <?php else:?>
+                        <a href="/member/logout"><?=Yii::$app->user->identity->username?>退出</a>
+                    <?php endif; ?>
+                    ] [<a href="/member/register">免费注册</a>] </li>
                 <li class="line">|</li>
                 <li>我的订单</li>
                 <li class="line">|</li>
@@ -151,7 +157,10 @@
         if (reg.test(telphon)) {
             var url = "/member/sms";
             var row = 'tel=' + telphon;
-            $.getJSON(url, row, function () {
+            $.getJSON(url, row, function (date) {
+                if(!date.status){
+                    alert(date.msg);
+                }
 
             });
             //启用输入框

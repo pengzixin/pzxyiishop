@@ -54,9 +54,11 @@ class Member extends \yii\db\ActiveRecord implements IdentityInterface
         ];
     }
     public function ValidateCaptcha(){
-        $captcha1=\Yii::$app->session->get('code_'.$this->tel);
+        $redis=new \Redis();
+        $redis->connect('127.0.0.1');
+        $captcha1=$redis->get('code_'.$this->tel);
         if($this->captcha!=$captcha1){
-            $this->addError('手机验证码不正确');
+            $this->addError('captcha','手机验证码不正确');
         }
     }
     /**
