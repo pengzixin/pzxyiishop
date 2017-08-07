@@ -112,7 +112,7 @@ class BrandController extends Controller{
                     return "{$p1}/{$p2}/{$filehash}.{$fileext}";
                 },//文件的保存方式
                 'validateOptions' => [
-                    'extensions' => ['jpg', 'png'],
+                    'extensions' => ['jpg', 'png','gif'],
                     'maxSize' => 1 * 1024 * 1024, //file size
                 ],
                 'beforeValidate' => function (UploadAction $action) {

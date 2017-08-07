@@ -10,6 +10,7 @@ use frontend\models\Member;
 use frontend\models\Order;
 use yii\captcha\CaptchaAction;
 use yii\filters\AccessControl;
+use yii\helpers\Json;
 use yii\web\Cookie;
 use yii\web\NotFoundHttpException;
 use yii\web\Request;
@@ -68,7 +69,7 @@ class MemberController extends \yii\web\Controller
 
                 //var_dump($model);exit;
                 \yii::$app->session->setFlash('success','登陆成功');
-                return $this->redirect(['goods/index']);
+                return $this->redirect('http://www.yiishop.com');
             }else{
                 //print_r($model->getErrors());exit;
             }
@@ -79,7 +80,7 @@ class MemberController extends \yii\web\Controller
     //注销，退出登录
     public function actionLogout(){
         \Yii::$app->user->logout();
-        return $this->redirect(['goods/index']);
+        return $this->redirect('http://www.yiishop.com');
     }
     //=================================登录结束==========================
 
@@ -180,7 +181,7 @@ class MemberController extends \yii\web\Controller
         //获取redis中保存的手机发送次数
         $times=$redis->get('times_'.$tel.'_'.date('Ymd'));
         $res=['status'=>0,'msg'=>''];
-        if($times && $times>=1){//判断存在该手机次数，并且次数大于3
+        if($times && $times>=5){//判断存在该手机次数，并且次数大于3
             $res['msg']='次数上限，明天再试';
             return json_encode($res);
         }
@@ -209,6 +210,14 @@ class MemberController extends \yii\web\Controller
         return $this->render('order-list',['orders'=>$orders]);
     }
     //============================订单展示页面结束==============================》
+
+    //获取登录用户状态
+    public function actionUserInfo(){
+        return Json::encode([
+            'isGuest'=>\Yii::$app->user->isGuest,
+            'username'=>\Yii::$app->user->identity->username,
+        ]);
+    }
 
     public function behaviors()
     {

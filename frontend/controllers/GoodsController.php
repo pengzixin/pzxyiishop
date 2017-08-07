@@ -51,6 +51,6 @@ class GoodsController extends Controller{
         $categorys= GoodsCategory::find()->where(['parent_id'=>0])->all();
         $contents=$this->render('index',['categorys'=>$categorys]);
         file_put_contents('index.html',$contents);
-        return $contents;
+        //return $contents;
     }
 }
